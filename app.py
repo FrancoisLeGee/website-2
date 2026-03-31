@@ -183,6 +183,8 @@ with tabs[0]:
                     <div style="margin-top:8px;font-size:0.82rem;color:{T['TEXT']};line-height:1.5;">{r["fazit"]}</div>
                     <div style="margin-top:6px;font-size:0.7rem;color:{T['DIM']};">Scout: {r["scout"]} · {r["datum"]}</div>
                 </div>''', unsafe_allow_html=True)
+                if st.button(f"👤 {r['player']}", key=f"go_{i}_{j}", use_container_width=True):
+                    st.session_state["selected_player"] = r["player"]
 
 # ═══ TAB 2: NEUER REPORT ═══
 with tabs[1]:
