@@ -137,15 +137,22 @@ st.markdown('<div class="main-hdr">📋 SCOUT HQ</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-hdr">Scouting Report Manager</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-# Tab routing
+# Custom tab navigation (supports programmatic switching)
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = 0
 tab_names = ["📋 Reports", "➕ Neuer Report", "👤 Spieler", "📊 Statistiken"]
-if st.query_params.get("tab") == "spieler":
-    st.info(f"👤 Profil: **{st.session_state.get('selected_player', '')}** — siehe Tab \"👤 Spieler\" oben")
-    st.query_params.clear()
-tabs = st.tabs(tab_names)
+nav_cols = st.columns(len(tab_names))
+for ti, (nc, tn) in enumerate(zip(nav_cols, tab_names)):
+    with nc:
+        is_active = st.session_state.active_tab == ti
+        btn_type = "primary" if is_active else "secondary"
+        if st.button(tn, key=f"nav_{ti}", use_container_width=True, type=btn_type):
+            st.session_state.active_tab = ti
+            st.rerun()
+st.markdown("---")
 
 # ═══ TAB 1: REPORTS ═══
-with tabs[0]:
+if st.session_state.active_tab == 0:
     st.markdown('<div class="section-title">📋 Scouting Reports</div>', unsafe_allow_html=True)
     c1,c2,c3,c4 = st.columns(4)
     with c1: pos_f = st.selectbox("Position",["Alle","FW","MF","DF","GK"])
@@ -190,11 +197,11 @@ with tabs[0]:
                 </div>''', unsafe_allow_html=True)
                 if st.button(f"👤 {r['player']}", key=f"go_{i}_{j}", use_container_width=True):
                     st.session_state["selected_player"] = r["player"]
-                    st.query_params["tab"] = "spieler"
+                    st.session_state.active_tab = 2
                     st.rerun()
 
 # ═══ TAB 2: NEUER REPORT ═══
-with tabs[1]:
+if st.session_state.active_tab == 1:
     st.markdown('<div class="section-title">➕ Neuer Scouting Report</div>', unsafe_allow_html=True)
     with st.form("new_report"):
         c1,c2,c3 = st.columns(3)
@@ -227,7 +234,7 @@ with tabs[1]:
             st.rerun()
 
 # ═══ TAB 3: SPIELER ═══
-with tabs[2]:
+if st.session_state.active_tab == 2:
     st.markdown('<div class="section-title">👤 Spieler-Übersicht</div>', unsafe_allow_html=True)
     players = {}
     for r in st.session_state.reports:
@@ -269,7 +276,7 @@ with tabs[2]:
                 st.markdown(f'<div class="metric-card"><div class="metric-val">{avg_m}</div><div class="metric-lbl">Mental</div></div>', unsafe_allow_html=True)
 
 # ═══ TAB 4: STATISTIKEN ═══
-with tabs[3]:
+if st.session_state.active_tab == 3:
     st.markdown('<div class="section-title">📊 Report-Statistiken</div>', unsafe_allow_html=True)
     reports = st.session_state.reports
     c1,c2,c3,c4 = st.columns(4)
