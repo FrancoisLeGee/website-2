@@ -137,7 +137,12 @@ st.markdown('<div class="main-hdr">📋 SCOUT HQ</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-hdr">Scouting Report Manager</div>', unsafe_allow_html=True)
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-tabs = st.tabs(["📋 Reports", "➕ Neuer Report", "👤 Spieler", "📊 Statistiken"])
+# Tab routing
+tab_names = ["📋 Reports", "➕ Neuer Report", "👤 Spieler", "📊 Statistiken"]
+if st.query_params.get("tab") == "spieler":
+    st.info(f"👤 Profil: **{st.session_state.get('selected_player', '')}** — siehe Tab \"👤 Spieler\" oben")
+    st.query_params.clear()
+tabs = st.tabs(tab_names)
 
 # ═══ TAB 1: REPORTS ═══
 with tabs[0]:
@@ -185,6 +190,8 @@ with tabs[0]:
                 </div>''', unsafe_allow_html=True)
                 if st.button(f"👤 {r['player']}", key=f"go_{i}_{j}", use_container_width=True):
                     st.session_state["selected_player"] = r["player"]
+                    st.query_params["tab"] = "spieler"
+                    st.rerun()
 
 # ═══ TAB 2: NEUER REPORT ═══
 with tabs[1]:
