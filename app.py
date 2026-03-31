@@ -226,7 +226,10 @@ with tabs[2]:
             players[r["player"]] = {"reports":[],"team":r["team"],"pos":r["pos"],"age":r["age"],"nation":r["nation"]}
         players[r["player"]]["reports"].append(r)
 
-    selected = st.selectbox("Spieler", list(players.keys()))
+    dp = st.session_state.pop("selected_player", None)
+    pl = list(players.keys())
+    di = pl.index(dp) if dp and dp in pl else 0
+    selected = st.selectbox("Spieler", pl, index=di)
     if selected:
         p = players[selected]
         reports = p["reports"]
